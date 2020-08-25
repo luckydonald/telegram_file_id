@@ -777,7 +777,7 @@ class PhotoFileId(FileId):
         return f"PhotoFileId(" \
                f"file_id={self.file_id!r}, type_id={self.type_id!r}, type_generic={self.type_generic!r}, " \
                f"type_detailed={self.type_detailed!r}, dc_id={self.dc_id!r}, id={self.id!r}, " \
-               f"access_hash={self.access_hash!r}, location={self.location!r}, version={self.version!r}, " \
+               f"access_hash={self.access_hash!r}, location={self.has_web_location!r}, version={self.version!r}, " \
                f"owner_id={self.owner_id!r}" \
                f")"
     # end def __str__

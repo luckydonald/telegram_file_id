@@ -11,7 +11,7 @@ if __name__ == '__main__':
     logging.add_colored_handler(level=logging.DEBUG)
 # end if
 
-from .api_utils import DocumentFileId
+from tg_file_id.file_id import DocumentFileId
 
 
 class TestDocumentFileId(TestCase):
@@ -51,7 +51,7 @@ class TestDocumentFileId(TestCase):
         file_id = DocumentFileId.from_file_id(file_id_str_new)
         self.assertEqual(4, file_id.version, "PhotoFileId file_id.version field matches")
         print(file_id)
-        file_id_str = file_id.to_file_id(version=4)
+        file_id_str = file_id.to_file_id(version=4, sub_version=22)
         self.assertEqual(file_id_str, file_id_str_new)
     # end def
 
@@ -81,7 +81,7 @@ class TestDocumentFileId(TestCase):
         file_id = DocumentFileId.from_file_id(file_id_str_old)
         self.assertEqual(2, file_id.version, "PhotoFileId file_id.version field matches")
         print(file_id)
-        file_id_str = file_id.to_file_id(version=4)
+        file_id_str = file_id.to_file_id(version=4, sub_version=22)
         self.assertEqual(file_id_str, file_id_str_new)
     # end def
 
