@@ -1,3 +1,8 @@
+from .file_id import (
+    FileId, base64url_decode, base64url_encode, rle_decode, rle_encode, posmod, pack_tl_string,
+    unpack_tl_string, unpack_null_terminated_string, WebLocationFileId, PhotoFileId,
+)
+
 import struct
 import base64
 import logging
@@ -6,11 +11,6 @@ from typing import Union, Tuple
 
 from luckydonaldUtils.encoding import to_unicode
 from luckydonaldUtils.exceptions import assert_type_or_raise
-
-from .file_id import (
-    FileId, base64url_decode, base64url_encode, rle_decode, rle_encode, posmod, pack_tl_string,
-    unpack_tl_string, unpack_null_terminated_string, WebLocationFileId, PhotoFileId,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -113,12 +113,15 @@ class FileUniqueId(object):
         if self.type_id == self.TYPE_WEB:
             binary += pack_tl_string(self.url)
         elif self.type_id == self.TYPE_PHOTO:
-            binary += struct.pack('<1l', self.volume_id, self.local_id)
+            binary += struct.pack('<ql', self.volume_id, self.local_id)
         else:
-            binary += struct.pack('<1l', self.volume_id, self.id)
+            binary += struct.pack('<q', self.id)
         # end if
+
+        return base64url_encode(rle_encode(binary))
     # end def
 
+    @classmethod
     def from_file_id(cls, file_id: Union[FileId, WebLocationFileId]):
         assert_type_or_raise(file_id, FileId, parameter_name="file_id")
         unique_type_id = cls.FULL_TO_UNIQUE_MAP[file_id.type_id]
@@ -134,8 +137,7 @@ class FileUniqueId(object):
                 _unique_id=None
             )
         else:
-            media_id = file_id.id
-            unique_id_obj = FileUniqueId(type_id=unique_type_id, id=media_id, _unique_id=None)
+            unique_id_obj = FileUniqueId(type_id=unique_type_id, id=file_id.id, _unique_id=None)
         # end if
 
         return unique_id_obj

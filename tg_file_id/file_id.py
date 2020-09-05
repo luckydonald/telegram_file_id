@@ -370,7 +370,8 @@ class FileId(object):
     TYPE_ENCRYPTED = 6  # Secret chat document
     TYPE_TEMP = 7  # Temporary document
     TYPE_STICKER = 8
-    TYPE_SONG = 9
+    TYPE_AUDIO = 9
+    TYPE_SONG = TYPE_AUDIO
     TYPE_ANIMATION = 10
     TYPE_ENCRYPTED_THUMBNAIL = 11
     TYPE_WALLPAPER = 12
@@ -469,7 +470,7 @@ class DocumentFileId(FileId):
 
     TYPES = {
         FileId.TYPE_VOICE: "voice", FileId.TYPE_VIDEO: "video", FileId.TYPE_DOCUMENT: "document",
-        FileId.TYPE_STICKER: "sticker", FileId.TYPE_SONG: "song", FileId.TYPE_VIDEO_NOTE: "video note",
+        FileId.TYPE_STICKER: "sticker", FileId.TYPE_AUDIO: "song", FileId.TYPE_VIDEO_NOTE: "video note",
         FileId.TYPE_ANIMATION: "animation",
     }
     """ A human readable string of the type """
@@ -556,13 +557,20 @@ class DocumentFileId(FileId):
 # end class DocumentFileId
 
 
-class WebLocationFileId(object):
+class WebLocationFileId(object):  # TODO make proper (FileId) subclass:
     def __init__(
         self,
         file_id, type_id, has_reference, has_web_location,
         file_reference,
         url, access_hash,
     ):
+        # super().__init__(
+        #     file_id=file_id,
+        #     type_id=type_id,
+        #     has_reference=has_reference,
+        #     file_reference=file_reference,
+        #     has_web_location=has_web_location,
+        # )
         self.file_id = file_id
         self.type_id = type_id
         self.has_reference = has_reference
