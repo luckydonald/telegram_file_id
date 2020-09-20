@@ -76,13 +76,11 @@ class FileUniqueId(object):
         if type_id == cls.TYPE_WEB:
             url = unpack_tl_string(buffer)
             file_id_obj = FileUniqueId(type_id=type_id, url=url, _unique_id=unique_id)
-        elif type_id == cls.TYPE_PHOTO:
-            assert len(unique_id) == 12
+        elif len(unique_id) == 12:
             volume_id = struct.unpack('<q', buffer.read(8))[0]
             local_id = struct.unpack('<l', buffer.read(4))[0]
             file_id_obj = FileUniqueId(type_id=type_id, volume_id=volume_id, local_id=local_id, _unique_id=unique_id)
         else:
-            assert len(unique_id) != 12
             media_id = struct.unpack('<q', buffer.read(8))[0]
             file_id_obj = FileUniqueId(type_id=type_id, id=media_id, _unique_id=unique_id)
         # end if
