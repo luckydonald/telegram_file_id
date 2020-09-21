@@ -67,6 +67,7 @@ class FileUniqueId(object):
         if not decoded:
             decoded = rle_decode(base64url_decode(unique_id))
         # end if
+        logger.debug(f'parsing unique_id {unique_id!r}')
 
         buffer = BytesIO(decoded)
         type_id = struct.unpack('<i', buffer.read(4))[0]
