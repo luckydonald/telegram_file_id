@@ -348,12 +348,74 @@ class FileId(object):
         return file_id
     # end def
 
-    def to_file_id(self):
+    def to_file_id(self, version=None, sub_version=None):
         """
         Subclasses do calculation here.
         :return:
         """
-        return self.file_id
+        if not version:
+            version = self.version
+        # end if
+        if not sub_version:
+            sub_version = self.sub_version
+        # end if
+
+        if self.file_id:
+            return self.file_id
+        # end if
+        type_id = self.type_id
+        if self.file_reference:
+            type_id |= self.TYPE_ID_FILE_REFERENCE_FLAG
+        # end if
+        if self.has_web_location:
+            type_id |= self.TYPE_ID_WEB_LOCATION_FLAG
+        # end if
+
+        file_id = b''
+        file_id += struct.pack('<LL', type_id, self.dc_id)
+        if self.file_reference:
+            file_id += pack_tl_string(self.file_reference)
+        # end if
+        if self.has_web_location:
+            assert isinstance(self, WebLocationFileId)
+            file_id += pack_tl_string(self.url)
+            file_id += struct.pack('<iq', self.access_hash)
+            return file_id
+            # buffer.seek(0)
+            # return base64url_encode(rle_encode(buffer.read()))
+        # end if
+
+        file_id += struct.pack('<qq', self.id, self.access_hash)
+
+        if self.type_id <= self.TYPE_PHOTO:
+            assert isinstance(self, PhotoFileId)
+            file_id += struct.pack('<q', self.photosize.volume_id)  # Long
+            if self.version >= 4:
+                file_id += struct.pack('<L', self.photosize.type_id)  # V
+            # end if
+            if self.photosize.type_id == self.PHOTOSIZE_SOURCE_LEGACY:
+                assert isinstance(self.photosize, PhotoFileId.PhotosizeSourceLegacy)
+                file_id += struct.pack('<q', self.photosize.volume_id)  # Long
+            elif self.photosize.type_id == self.PHOTOSIZE_SOURCE_THUMBNAIL:
+                assert isinstance(self.photosize, PhotoFileId.PhotosizeSourceThumbnail)
+                file_id += struct.pack('<L', self.photosize.file_type)
+                file_id += pack_null_terminated_string(self.photosize.thumbnail_type)
+            elif self.photosize.type_id in (self.PHOTOSIZE_SOURCE_DIALOGPHOTO_BIG, self.PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL):
+                assert isinstance(self.photosize, (PhotoFileId.PhotosizeSourceDialogPhotoBig, PhotoFileId.PhotosizeSourceDialogPhotoSmall))
+                assert isinstance(self.photosize, PhotoFileId.PhotosizeSourceDialogPhoto)
+                file_id += struct.pack('<q', self.photosize.dialog_id)
+                file_id += struct.pack('<q', self.photosize.dialog_access_hash)
+            elif self.photosize.type_id == self.PHOTOSIZE_SOURCE_STICKERSET_THUMBNAIL:
+                assert isinstance(self.photosize, PhotoFileId.PhotosizeSourceStickersetThumbnail)
+                file_id += struct.pack('<q', self.photosize.sticker_set_id)
+                file_id += struct.pack('<q', self.photosize.sticker_set_access_hash)
+            # end if
+            file_id += struct.pack('<l', self.photosize.location_local_id)
+        # end if
+        if version >= 4:
+            file_id += chr(sub_version).encode()
+        # end if
+        file_id += chr(version).encode()
     # end def
 
     def __repr__(self):
@@ -517,6 +579,7 @@ class DocumentFileId(FileId):
     # end def
 
     def to_file_id(self, version=None, sub_version=None):
+        return super().to_file_id(version=version, sub_version=sub_version)
         assert self.type_id in DocumentFileId.TYPES
         if version is None:
             version = self.version
@@ -746,7 +809,8 @@ class PhotoFileId(FileId):
         return FileId.from_file_id(file_id=file_id, decoded=decoded)
     # end def
 
-    def to_file_id(self, version=None):
+    def to_file_id(self, version=None, sub_version=None):
+        return super().to_file_id(version=version, sub_version=sub_version)
         assert self.type_id in PhotoFileId.TYPES
         if version == 2:
             binary = struct.pack(
