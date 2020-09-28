@@ -360,6 +360,7 @@ class FileId(object):
         return "FileId(file_id={file_id!r}, type_id={type_id!r}, type_generic={type_generic!r}, type_detailed={type_detailed!r}, dc_id={dc_id!r}, id={id!r}, access_hash={access_hash!r}, version={version!r}, owner_id={owner_id!r})".format(
             file_id=self.file_id, type_id=self.type_id, type_generic=self.type_generic, type_detailed=self.type_detailed,
             dc_id=self.dc_id, id=self.id, access_hash=self.access_hash, version=self.version,
+            owner_id=self.owner_id,
         )
     # end def __str__
 
