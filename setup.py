@@ -6,7 +6,9 @@ __author__ = 'luckydonald'
 
 here = path.abspath(path.dirname(__file__))
 
-long_description = """Easy state management for teleflask."""
+with open('README.md') as f:
+    long_description = f.read()
+# end if
 
 setup(
     name='tg_file_id', version=VERSION,
