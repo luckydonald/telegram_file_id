@@ -1,15 +1,13 @@
 from .file_id import (
-    FileId, base64url_decode, base64url_encode, rle_decode, rle_encode, posmod, pack_tl_string,
-    unpack_tl_string, unpack_null_terminated_string, WebLocationFileId, PhotoFileId,
+    FileId, base64url_decode, base64url_encode, rle_decode, rle_encode, pack_tl_string,
+    unpack_tl_string, WebLocationFileId, PhotoFileId,
 )
 
 import struct
-import base64
 import logging
-from io import BytesIO, SEEK_CUR, SEEK_END
-from typing import Union, Tuple
+from io import BytesIO, SEEK_END
+from typing import Union
 
-from luckydonaldUtils.encoding import to_unicode
 from luckydonaldUtils.exceptions import assert_type_or_raise
 
 logger = logging.getLogger(__name__)
