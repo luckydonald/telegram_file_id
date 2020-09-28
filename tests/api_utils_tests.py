@@ -4,7 +4,7 @@ from codecs import decode, encode
 
 from luckydonaldUtils.encoding import to_binary
 
-from file_id import FileId, rle_decode, base64url_decode, DocumentFileId, PhotoFileId
+from tg_file_id.file_id import FileId, rle_decode, base64url_decode, DocumentFileId, PhotoFileId
 
 
 class MyTestCase(unittest.TestCase):
