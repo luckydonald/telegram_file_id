@@ -148,6 +148,19 @@ def unpack_null_terminated_string(buffer: BytesIO, as_string: bool = False) -> U
 # end def
 
 
+def pack_null_terminated_string(string: Union[str, bytes], as_string: bool = False) -> str:
+    if isinstance(string, str):
+        string: bytes = string.encode('utf-8')
+    # end if
+    string = string + b'\00'
+
+    if as_string:
+        string = string.decode('utf-8')
+    # end if
+    return string
+# end def
+
+
 class FileId(object):
     TYPE_ID_WEB_LOCATION_FLAG = 1 << 24
     TYPE_ID_FILE_REFERENCE_FLAG = 1 << 25
@@ -244,9 +257,9 @@ class FileId(object):
         # end if
         data, version, sub_version = cls._parse_version(decoded)
         buffer = BytesIO(data)
-        type_id = struct.unpack('<i', buffer.read(4))[0]
+        type_id = struct.unpack('<L', buffer.read(4))[0]
         type_id, has_reference, has_web_location = cls._normalize_type_id(type_id)
-        dc_id = struct.unpack('<i', buffer.read(4))[0]
+        dc_id = struct.unpack('<L', buffer.read(4))[0]
         if has_reference:
             file_reference = unpack_tl_string(buffer)
         else:
