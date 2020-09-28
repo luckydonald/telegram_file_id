@@ -270,29 +270,20 @@ class FileId(object):
         access_hash = struct.unpack('<q', buffer.read(8))[0]
         if type_id in PhotoFileId.TYPES:
             volume_id = struct.unpack('<q', buffer.read(8))[0]
-            # $result['photosize_source'] = $result['version'] >= 4 ? \unpack('V', \stream_get_contents($fileId, 4))[1] : 0;
             photosize_source = 0 if version < 4 else struct.unpack('<L', buffer.read(4))[0]
             photosize = None
-            # switch($result['photosize_source']) {
-            # case PHOTOSIZE_SOURCE_LEGACY:
             if photosize_source == PhotoFileId.PHOTOSIZE_SOURCE_LEGACY:
-                # $result += \unpack(LONG.'secret', \stream_get_contents($fileId, 8));
                 secret = struct.unpack('<q', buffer.read(8))[0]
                 location_local_id = struct.unpack('<l', buffer.read(4))[0]
                 photosize = PhotoFileId.PhotosizeSourceLegacy(volume_id=volume_id, secret=secret, location_local_id=location_local_id)
-            # case PHOTOSIZE_SOURCE_THUMBNAIL:
             elif photosize_source == PhotoFileId.PHOTOSIZE_SOURCE_THUMBNAIL:
                 file_type = struct.unpack('<L', buffer.read(4))[0]
                 thumbnail_type = unpack_null_terminated_string(buffer)
                 location_local_id = struct.unpack('<l', buffer.read(4))[0]
                 photosize = PhotoFileId.PhotosizeSourceThumbnail(volume_id=volume_id, file_type=file_type, thumbnail_type=thumbnail_type, location_local_id=location_local_id)
-            elif photosize_source in [PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL, PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_BIG]:
-                # $result['photo_size'] = $result['photosize_source'] === PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL ? 'photo_small' : 'photo_big';
-                # $result['dialog_id'] = unpackLong(\stream_get_contents($fileId, 8));
+            elif photosize_source in (PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL, PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_BIG):
                 dialog_id = struct.unpack('<q', buffer.read(8))[0]
-                # $result['dialog_access_hash'] = \unpack(LONG, \stream_get_contents($fileId, 8))[1];
                 dialog_access_hash = struct.unpack('<q', buffer.read(8))[1]
-                # fixLong($result, 'dialog_access_hash');
                 location_local_id = struct.unpack('<l', buffer.read(4))[0]
                 if photosize_source == PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL:
                     photosize = PhotoFileId.PhotosizeSourceDialogPhotoSmall(volume_id=volume_id, dialog_id=dialog_id, dialog_access_hash=dialog_access_hash, location_local_id=location_local_id)
@@ -300,13 +291,11 @@ class FileId(object):
                     photosize = PhotoFileId.PhotosizeSourceDialogPhotoBig(volume_id=volume_id, dialog_id=dialog_id, dialog_access_hash=dialog_access_hash, location_local_id=location_local_id)
                 # end if
             elif photosize_source == PhotoFileId.PHOTOSIZE_SOURCE_STICKERSET_THUMBNAIL:
-                # $result += \unpack(LONG.'sticker_set_id/'.LONG.'sticker_set_access_hash', \stream_get_contents($fileId, 16));
                 sticker_set_id = struct.unpack('<q', buffer.read(8))[0]
                 sticker_set_access_hash = struct.unpack('<q', buffer.read(8))[0]
                 location_local_id = struct.unpack('<l', buffer.read(4))[0]
                 photosize = PhotoFileId.PhotosizeSourceStickersetThumbnail(volume_id=volume_id, sticker_set_id=sticker_set_id, sticker_set_access_hash=sticker_set_access_hash, location_local_id=location_local_id)
             # end if
-            # $result += \unpack('llocal_id', \stream_get_contents($fileId, 4));
 
             file_id_obj = PhotoFileId(
                 file_id=file_id, type_id=type_id, has_reference=has_reference, has_web_location=has_web_location,
