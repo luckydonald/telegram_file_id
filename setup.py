@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from os import path
+from tg_file_id import VERSION
 __author__ = 'luckydonald'
 
 here = path.abspath(path.dirname(__file__))
@@ -8,8 +9,8 @@ here = path.abspath(path.dirname(__file__))
 long_description = """Easy state management for teleflask."""
 
 setup(
-    name='telestate', version="0.1.0",
-    description='State Management for Teleflask',
+    name='tg_file_id', version=VERSION,
+    description='Decode and encode telegram file_id and file_unique_id and convert between those.',
     long_description=long_description,
     # The project's main homepage.
     url='https://github.com/luckydonald/telegram_file_id',
@@ -20,7 +21,7 @@ setup(
     license='GPLv3+',
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha', # 2 - Pre-Alpha, 3 - Alpha, 4 - Beta, 5 - Production/Stable
+        'Development Status :: 3 - Alpha',  # 2 - Pre-Alpha, 3 - Alpha, 4 - Beta, 5 - Production/Stable
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
         'Topic :: Database',
@@ -37,10 +38,10 @@ setup(
         'Programming Language :: Python :: 3',
         # 'Programming Language :: Python :: 3.2',
         # 'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
+        # 'Programming Language :: Python :: 3.4',
+        # 'Programming Language :: Python :: 3.5',
+        # 'Programming Language :: Python :: 3.6',
+        # 'Programming Language :: Python :: 3.7',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Unix',
     ],
