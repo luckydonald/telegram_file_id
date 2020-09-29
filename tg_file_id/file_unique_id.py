@@ -106,13 +106,13 @@ class FileUniqueId(object):
     def to_unique_id(self):
         assert self.type_id in self.TYPES
         binary = b''
-        binary += struct.pack('<i', self.type_id)
+        binary += struct.pack('<l', self.type_id)
         if self.type_id == self.TYPE_WEB:
             binary += pack_tl_string(self.url)
         elif self.type_id == self.TYPE_PHOTO:
             binary += struct.pack('<ql', self.volume_id, self.local_id)
         else:
-            binary += struct.pack('<q', self.id)
+            binary += struct.pack('<Q', self.id)
         # end if
 
         return base64url_encode(rle_encode(binary))
