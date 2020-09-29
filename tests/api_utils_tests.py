@@ -260,15 +260,12 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expected, result)
     # end def
 
-    def test_base64url_encode(self):
+    def test_base64url_encode_rle_encode(self):
         given = b'\x02\x00\x00\x00\x04\x0b\x00\x00\x02\x8b\xa3\x00'
         expected = 'AgADBAsAAgKLowAB'
         result = base64url_encode(rle_encode(given))
         self.assertEqual(expected, result)
     # end def
-
-
-
 
     def test_user_ids(self):
         #https://getstickers.me/sticker/test4458pack/CAADAgAD1AkAAgKLowABByoNoHLboHEC/
