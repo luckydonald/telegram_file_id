@@ -2,29 +2,29 @@ import struct
 import base64
 import logging
 from io import BytesIO, SEEK_CUR, SEEK_END
-from typing import Union, Tuple
+from typing import Union, Tuple, TypeVar, Type, Dict
 
 from luckydonaldUtils.encoding import to_unicode
 from luckydonaldUtils.exceptions import assert_type_or_raise
 
 logger = logging.getLogger(__name__)
+CLASS = TypeVar('CLASS')
 
-
-def base64url_decode(string):
+def base64url_decode(string: str) -> bytes:
     # add missing padding # http://stackoverflow.com/a/9807138
     return base64.urlsafe_b64decode(string + '='*(4 - len(string)%4))
 # end def
 
 
-def base64url_encode(string):
+def base64url_encode(string: bytes) -> str:
     return to_unicode(base64.urlsafe_b64encode(string)).rstrip("=")
 # end def
 
 
-def rle_decode(binary) -> bytearray:
+def rle_decode(binary: bytes) -> bytearray:
     """
     Returns the byte array of the given string.
-    :param string:
+    :param binary: Input data.
     :return: The array of ints.
     :rtype: bytearray
     """
@@ -52,7 +52,7 @@ def rle_decode(binary) -> bytearray:
 # end def
 
 
-def rle_encode(binary):
+def rle_encode(binary: bytes) -> bytearray:
     # https://github.com/danog/MadelineProto/blob/1485d3879296a997d47f54469b0dd518b9230b06/src/danog/MadelineProto/TL/Files.php#L85
     new = bytearray()
     count = 0
@@ -76,7 +76,7 @@ def rle_encode(binary):
 # end def
 
 
-def posmod(a, b):
+def posmod(a: int, b: int) -> int:
     """
     Positive modulo
     Works just like the % (modulus) operator, only returns always a postive number.
@@ -112,10 +112,12 @@ def pack_tl_string(string: Union[str, bytes]) -> bytes:
 
 def unpack_tl_string(buffer: BytesIO, as_string: bool = False) -> Union[str, bytes]:
     """
-    https://github.com/danog/tg-file-decoder/blob/afcdb9a4a7239e36e8ab3b9a02db72eaa95db66e/src/type.php#L395
-    :param data:
-    :return:
+    Unpack a tl_string.
+    :param buffer: Input buffer. Needs support for `.read(1)` and `.seek(SEEK_CUR)`.
+    :param as_string: if we should return it as utf-8 decoded `str` instead of `bytes`.
+    :return: The unpacked string.
     """
+    # https://github.com/danog/tg-file-decoder/blob/afcdb9a4a7239e36e8ab3b9a02db72eaa95db66e/src/type.php#L395
     length: int = ord(buffer.read(1))
 
     if length > 254:
@@ -139,6 +141,12 @@ def unpack_tl_string(buffer: BytesIO, as_string: bool = False) -> Union[str, byt
 
 
 def unpack_null_terminated_string(buffer: BytesIO, as_string: bool = False) -> Union[str, bytes]:
+    """
+    Unpack a null terminated (\0) string.
+    :param buffer: Input buffer. Needs support for `.read(1)`.
+    :param as_string: if we should return it as utf-8 decoded `str` instead of `bytes`.
+    :return: The unpacked string.
+    """
     char = buffer.read(1)
     new_buff = b''
     while char != b'\00':
@@ -152,15 +160,17 @@ def unpack_null_terminated_string(buffer: BytesIO, as_string: bool = False) -> U
 # end def
 
 
-def pack_null_terminated_string(string: Union[str, bytes], as_string: bool = False) -> str:
+def pack_null_terminated_string(string: Union[str, bytes]) -> bytes:
+    """
+    Packs a string and appends the null terminator \0 to it.
+    :param string: The string to encode.
+    :param as_string: if we should return it as utf-8 decoded `str` instead of `bytes`.
+    :return: The unpacked string.
+    """
     if isinstance(string, str):
         string: bytes = string.encode('utf-8')
     # end if
     string = string + b'\00'
-
-    if as_string:
-        string = string.decode('utf-8')
-    # end if
     return string
 # end def
 
@@ -231,7 +241,7 @@ class FileId(object):
     # end def __init__
 
     @property
-    def owner_id(self):
+    def owner_id(self) -> int:
         if not (self.version in (2, 4) and self.type_id == DocumentFileId.TYPE_STICKER):
             return None
         # end if
@@ -248,7 +258,7 @@ class FileId(object):
     # end def
 
     @classmethod
-    def from_file_id(cls, file_id, decoded=None):
+    def from_file_id(cls, file_id, decoded: Union[None, bytes] = None) -> Union['PhotoFileId', 'DocumentFileId', 'WebLocationFileId']:
         """
 
         :param file_id:
@@ -345,14 +355,14 @@ class FileId(object):
         return file_id_obj
     # end def
 
-    def recalculate(self):
+    def recalculate(self) -> str:
         """ Recalculates the file_id """
         file_id = self.to_file_id()
         self.file_id = file_id
         return file_id
     # end def
 
-    def to_file_id(self, version=None, sub_version=None):
+    def to_file_id(self, version: Union[int, None] = None, sub_version: Union[int, None] = None) -> str:
         """
         Subclasses do calculation here.
         :return:
@@ -384,9 +394,7 @@ class FileId(object):
             assert isinstance(self, WebLocationFileId)
             file_id += pack_tl_string(self.url)
             file_id += struct.pack('<iq', self.access_hash)
-            return file_id
-            # buffer.seek(0)
-            # return base64url_encode(rle_encode(buffer.read()))
+            return base64url_encode(rle_encode(file_id))
         # end if
 
         file_id += struct.pack('<qq', self.id, self.access_hash)
@@ -422,7 +430,7 @@ class FileId(object):
         file_id += chr(version).encode()
     # end def
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "FileId(file_id={file_id!r}, type_id={type_id!r}, type_generic={type_generic!r}, type_detailed={type_detailed!r}, dc_id={dc_id!r}, id={id!r}, access_hash={access_hash!r}, version={version!r}, owner_id={owner_id!r})".format(
             file_id=self.file_id, type_id=self.type_id, type_generic=self.type_generic, type_detailed=self.type_detailed,
             dc_id=self.dc_id, id=self.id, access_hash=self.access_hash, version=self.version,
@@ -451,7 +459,7 @@ class FileId(object):
     TYPE_SIZE = 17
     TYPE_NONE = 18
 
-    SUPPORTED_VERSIONS = (
+    SUPPORTED_VERSIONS: Tuple[Tuple[int, int], ...] = (
         (2, 0),
         (4, 22),
         (4, 27),
@@ -494,7 +502,7 @@ class DocumentFileId(FileId):
             type_detailed: str,
             dc_id: int, id: int, access_hash: int,
             version=2, sub_version=0,
-        ):
+    ):
         """
         :param file_id: Telegram file_id
         :type  file_id: str
@@ -537,21 +545,16 @@ class DocumentFileId(FileId):
         )
     # end def __init__
 
-    TYPES = {
+    TYPES: Dict[int, str] = {
         FileId.TYPE_VOICE: "voice", FileId.TYPE_VIDEO: "video", FileId.TYPE_DOCUMENT: "document",
         FileId.TYPE_STICKER: "sticker", FileId.TYPE_AUDIO: "song", FileId.TYPE_VIDEO_NOTE: "video note",
         FileId.TYPE_ANIMATION: "animation",
     }
     """ A human readable string of the type """
 
-    def swap_type_sticker(self):
+    def swap_type_sticker(self) -> str:
         """
-        This swaps out the document types "document" <-> "sticker"
-
-        :param data: Can be a dict as obtained by `take_apart_file_id(file_id)`.
-                     Otherwise a file_id is assumed and said function `take_apart_file_id` is called.
-        :type  data: dict or bytearray or bytes
-
+        This swaps out the document types "document" <-> "sticker". Modifies the underlying data.
         :return: new file id
         :rtype: str
         """
@@ -560,20 +563,20 @@ class DocumentFileId(FileId):
         return self.recalculate()
     # end def
 
-    def change_type(self, type_id):
+    def change_type(self, type_id: int):
         """
-        Changes the type of the document.
+        Changes the type of the document to the given type
 
         :param type_id:
         :return:
         """
+        self.type_detailed = DocumentFileId.TYPES[self.type_id]  # this raises KeyError if it isn't a valid type.
         self.type_id = type_id
-        self.type_detailed = DocumentFileId.TYPES[self.type_id]
         return self.recalculate()
     # end def
 
     @classmethod
-    def from_file_id(cls, file_id, decoded=None):
+    def from_file_id(cls: Type[CLASS], file_id, decoded: Union[None, bytes] = None) -> Union[FileId, CLASS]:
         """
         :param file_id:
         :param decoded:
@@ -582,7 +585,7 @@ class DocumentFileId(FileId):
         return FileId.from_file_id(file_id=file_id, decoded=decoded)
     # end def
 
-    def to_file_id(self, version=None, sub_version=None):
+    def to_file_id(self, version: Union[int, None] = None, sub_version: Union[int, None] = None) -> str:
         return super().to_file_id(version=version, sub_version=sub_version)
         assert self.type_id in DocumentFileId.TYPES
         if version is None:
@@ -618,7 +621,7 @@ class DocumentFileId(FileId):
         return base64url_encode(rle_encode(binary))
     # end def
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "DocumentFileId(file_id={file_id!r}, type_id={type_id!r}, type_generic={type_generic!r}, type_detailed={type_detailed!r}, dc_id={dc_id!r}, id={id!r}, access_hash={access_hash!r}, version={version!r}, owner_id={owner_id!r})".format(
             file_id=self.file_id, type_id=self.type_id, type_generic=self.type_generic, type_detailed=self.type_detailed,
             dc_id=self.dc_id, id=self.id, access_hash=self.access_hash, owner_id=self.owner_id, version=self.version,
@@ -650,11 +653,11 @@ class WebLocationFileId(object):  # TODO make proper (FileId) subclass:
         self.access_hash = access_hash
     # end def __init__
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
     # end def __repr__
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__repr__()
     # end def __str__
 # end class WebLocationFileId
@@ -668,11 +671,11 @@ class PhotoFileId(FileId):
             self.location_local_id: int = location_local_id
         # end def __init__
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return f"{self.__class__.__name__}(type_id={self.type_id!r}, volume_id={self.volume_id!r}, location_local_id={self.location_local_id!r})"
         # end def __repr__
 
-        def __str__(self):
+        def __str__(self) -> str:
             return self.__repr__()
         # end def __str__
     # end class PhotosizeSource
@@ -683,7 +686,7 @@ class PhotoFileId(FileId):
             super().__init__(PhotoFileId.PHOTOSIZE_SOURCE_LEGACY, volume_id=volume_id, location_local_id=location_local_id)
         # end def __init__
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return f"{self.__class__.__name__}(type_id={self.type_id!r}, volume_id={self.volume_id!r}, location_local_id={self.location_local_id!r}, secret={self.secret})"
         # end def __repr__
     # end class PhotosizeSourceLegacy
@@ -695,7 +698,7 @@ class PhotoFileId(FileId):
             super().__init__(PhotoFileId.PHOTOSIZE_SOURCE_THUMBNAIL, volume_id=volume_id, location_local_id=location_local_id)
         # end def __init__
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return (
                 f"{self.__class__.__name__}("
                 f"type_id={self.type_id!r}, volume_id={self.volume_id!r}, location_local_id={self.location_local_id!r}, "
@@ -712,7 +715,7 @@ class PhotoFileId(FileId):
             super().__init__(type_id, volume_id=volume_id, location_local_id=location_local_id)
         # end def __init__
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return (
                 f"{self.__class__.__name__}("
                 f"type_id={self.type_id!r}, volume_id={self.volume_id!r}, location_local_id={self.location_local_id!r}, "
@@ -741,7 +744,7 @@ class PhotoFileId(FileId):
             super().__init__(PhotoFileId.PHOTOSIZE_SOURCE_STICKERSET_THUMBNAIL, volume_id=volume_id, location_local_id=location_local_id)
         # end def __init__
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return (
                 f"{self.__class__.__name__}("
                 f"type_id={self.type_id!r}, volume_id={self.volume_id!r}, location_local_id={self.location_local_id!r}, "
@@ -790,7 +793,7 @@ class PhotoFileId(FileId):
         self.photosize = photosize
     # end def __init__
 
-    TYPES = {FileId.TYPE_THUMBNAIL: "thumbnail", FileId.TYPE_PROFILE_PHOTO: "profile picture", FileId.TYPE_PHOTO: "photo"}
+    TYPES: Dict[int, str] = {FileId.TYPE_THUMBNAIL: "thumbnail", FileId.TYPE_PROFILE_PHOTO: "profile picture", FileId.TYPE_PHOTO: "photo"}
     """ A human readable string of the type """
 
     PHOTOSIZE_SOURCE_LEGACY: int = 0
@@ -809,7 +812,7 @@ class PhotoFileId(FileId):
     """ Used for document and photo thumbnails """
 
     @classmethod
-    def from_file_id(cls, file_id, decoded=None):
+    def from_file_id(cls: Type[CLASS], file_id, decoded: Union[None, bytes] = None) -> Union[FileId, CLASS]:
         return FileId.from_file_id(file_id=file_id, decoded=decoded)
     # end def
 
@@ -852,7 +855,7 @@ class PhotoFileId(FileId):
         return base64url_encode(rle_encode(binary))
     # end def
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"PhotoFileId(" \
                f"file_id={self.file_id!r}, type_id={self.type_id!r}, type_generic={self.type_generic!r}, " \
                f"type_detailed={self.type_detailed!r}, dc_id={self.dc_id!r}, id={self.id!r}, " \
@@ -861,4 +864,3 @@ class PhotoFileId(FileId):
                f")"
     # end def __str__
 # end class PhotoFileId
-# end def

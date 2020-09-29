@@ -6,12 +6,12 @@ from .file_id import (
 import struct
 import logging
 from io import BytesIO, SEEK_END
-from typing import Union
+from typing import Union, Type, TypeVar
 
 from luckydonaldUtils.exceptions import assert_type_or_raise
 
 logger = logging.getLogger(__name__)
-
+CLASS = TypeVar('CLASS')
 
 class FileUniqueId(object):
     # type: def __init__(self, type_id: int, id: int, unique_id: Union[str, None]): pass
@@ -103,7 +103,7 @@ class FileUniqueId(object):
         )
     # end def __str__
 
-    def to_unique_id(self):
+    def to_unique_id(self) -> str:
         assert self.type_id in self.TYPES
         binary = b''
         binary += struct.pack('<l', self.type_id)
@@ -119,7 +119,7 @@ class FileUniqueId(object):
     # end def
 
     @classmethod
-    def from_file_id(cls, file_id: Union[FileId, WebLocationFileId]):
+    def from_file_id(cls: Type[CLASS], file_id: Union[str, FileId, WebLocationFileId]) -> CLASS:
         assert_type_or_raise(file_id, str, FileId, parameter_name="file_id")
         if isinstance(file_id, str):
             file_id = FileId.from_file_id(file_id)
