@@ -4,7 +4,11 @@ from codecs import decode, encode
 
 from luckydonaldUtils.encoding import to_binary
 
-from tg_file_id.file_id import FileId, rle_decode, base64url_decode, DocumentFileId, PhotoFileId
+from tg_file_id.file_id import (
+    FileId, rle_decode, base64url_decode, DocumentFileId, PhotoFileId, base64url_encode,
+    rle_encode,
+)
+from tg_file_id.file_unique_id import FileUniqueId
 
 
 class MyTestCase(unittest.TestCase):
@@ -230,6 +234,42 @@ class MyTestCase(unittest.TestCase):
         # end for
     # end def
 
+    def test_to_unique(self):
+        given_file_id = 'CAACAgIAAxkBAAIEol9yQhBqFnT4HXldAh31a-hYXuDIAAIECwACAoujAAFFn1sl9AABHbkbBA'
+        expected_unique_id = 'AgADBAsAAgKLowAB'
+
+        file_id = FileId.from_file_id(given_file_id)
+        self.assertEqual(8, file_id.type_id)
+        self.assertEqual(46033261910035204, file_id.id)
+
+        unique_id = FileUniqueId.from_file_id(file_id)
+        self.assertEqual(2, unique_id.type_id)
+        self.assertEqual(46033261910035204, unique_id.id)
+        self.assertEqual(None, unique_id.volume_id)
+        self.assertEqual(None, unique_id.local_id)
+        self.assertEqual(None, unique_id.url)
+        unique_id_str = unique_id.to_unique_id()
+
+        self.assertEqual(expected_unique_id, unique_id_str)
+    # end def
+
+    def test_base64url_encode(self):
+        given = b'\x02\x00\x00\x00\x04\x0b\x00\x00\x02\x8b\xa3\x00'
+        expected = 'AgAAAAQLAAACi6MA'
+        result = base64url_encode(given)
+        self.assertEqual(expected, result)
+    # end def
+
+    def test_base64url_encode(self):
+        given = b'\x02\x00\x00\x00\x04\x0b\x00\x00\x02\x8b\xa3\x00'
+        expected = 'AgADBAsAAgKLowAB'
+        result = base64url_encode(rle_encode(given))
+        self.assertEqual(expected, result)
+    # end def
+
+
+
+
     def test_user_ids(self):
         #https://getstickers.me/sticker/test4458pack/CAADAgAD1AkAAgKLowABByoNoHLboHEC/
         test_data = {
@@ -279,6 +319,7 @@ class MyTestCase(unittest.TestCase):
         print(len(users))
         print(successes)
         print(fails)
+    # end def
 # END CLASS
 
 if __name__ == '__main__':
