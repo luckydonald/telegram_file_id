@@ -14,6 +14,7 @@ setup(
     name='tg_file_id', version=VERSION,
     description='Decode and encode telegram file_id and file_unique_id and convert between those.',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     # The project's main homepage.
     url='https://github.com/luckydonald/telegram_file_id',
     # Author details
