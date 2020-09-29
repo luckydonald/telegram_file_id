@@ -120,7 +120,10 @@ class FileUniqueId(object):
 
     @classmethod
     def from_file_id(cls, file_id: Union[FileId, WebLocationFileId]):
-        assert_type_or_raise(file_id, FileId, parameter_name="file_id")
+        assert_type_or_raise(file_id, str, FileId, parameter_name="file_id")
+        if isinstance(file_id, str):
+            file_id = FileId.from_file_id(file_id)
+        # end if
         unique_type_id = cls.FULL_TO_UNIQUE_MAP[file_id.type_id]
         if unique_type_id == cls.TYPE_WEB:
             assert_type_or_raise(file_id, WebLocationFileId, parameter_name="file_id of type FileUniqueId.TYPE_WEB")
