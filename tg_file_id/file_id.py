@@ -10,6 +10,7 @@ from luckydonaldUtils.exceptions import assert_type_or_raise
 logger = logging.getLogger(__name__)
 CLASS = TypeVar('CLASS')
 
+
 def base64url_decode(string: str) -> bytes:
     # add missing padding # http://stackoverflow.com/a/9807138
     return base64.urlsafe_b64decode(string + '='*(4 - len(string)%4))
@@ -76,7 +77,7 @@ def rle_encode(binary: bytes) -> bytearray:
 # end def
 
 
-def posmod(a: int, b: int) -> int:
+def pos_mod(a: int, b: int) -> int:
     """
     Positive modulo
     Works just like the % (modulus) operator, only returns always a postive number.
@@ -96,11 +97,11 @@ def pack_tl_string(string: Union[str, bytes]) -> bytes:
     concat = b''
     if length <= 253:
         concat += chr(length).encode()
-        fill = posmod(-length - 1, 4)
+        fill = pos_mod(-length - 1, 4)
     else:
         concat += chr(254).encode()
         concat += struct.pack('<L', length)[0:3]
-        fill = posmod(-length, 4)
+        fill = pos_mod(-length, 4)
     # end if
     concat += string
     concat += b'\x00' * fill
@@ -127,9 +128,9 @@ def unpack_tl_string(buffer: BytesIO, as_string: bool = False) -> Union[str, byt
     if length == 254:
         # untested
         length = int(struct.unpack('<L', (buffer.read(3) + b'\x00'))[0])
-        fill = posmod(-1 * length, 4)
+        fill = pos_mod(-1 * length, 4)
     else:
-        fill = posmod(-(length + 1), 4)
+        fill = pos_mod(-(length + 1), 4)
     # end if
     string = buffer.read(length)
     buffer.seek(fill, SEEK_CUR)
