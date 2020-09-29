@@ -68,6 +68,10 @@ def rle_encode(binary):
             new.append(cur)
         # end if
     # end for
+    if count > 0:
+        new.append(0)
+        new.append(count)
+    # end if
     return new
 # end def
 
