@@ -56,11 +56,9 @@ FileUniqueId(
 
 ### Convert `file_id`s to `file_unique_id`s
 ```py
-from tg_file_id.file_id import FileId
 from tg_file_id.file_unique_id import FileUniqueId
 
-file_id = FileId.from_file_id('CAACAgIAAxkBAAIEol9yQhBqFnT4HXldAh31a-hYXuDIAAIECwACAoujAAFFn1sl9AABHbkbBA')
-unique_id = FileUniqueId.from_file_id(file_id)
+unique_id = FileUniqueId.from_file_id('CAACAgIAAxkBAAIEol9yQhBqFnT4HXldAh31a-hYXuDIAAIECwACAoujAAFFn1sl9AABHbkbBA')
 calculated_file_unique_id = unique_id.to_unique_id()
 ```
 
