@@ -358,14 +358,39 @@ class FileId(object):
 
     def recalculate(self) -> str:
         """ Recalculates the file_id """
-        file_id = self.to_file_id()
-        self.file_id = file_id
-        return file_id
+        return self.to_file_id(recalculate=True)
     # end def
 
-    def to_file_id(self, version: Union[int, None] = None, sub_version: Union[int, None] = None) -> str:
+    def to_file_id(self, *, recalculate: bool = False, version: Union[int, None] = None, sub_version: Union[int, None] = None) -> str:
         """
-        Subclasses do calculation here.
+        Get a file_id.
+        If we already have a cached one present (and `force_recalculate` is False), we will return that one instead.
+        :param recalculate: if we should force a new calculation of it. Optional, default is False (unless it wasn't cached before, or the version differs).
+        :param version:
+        :param sub_version:
+        :return:
+        """
+        if version and self.version != version:
+            # version is different, we need to calculate it.
+            return self.calculate_file_id(version=version, sub_version=sub_version)
+        # end if
+        if sub_version and self.sub_version != sub_version:
+            # version is different, we need to calculate it.
+            return self.calculate_file_id(version=version, sub_version=sub_version)
+        # end if
+
+        if not recalculate and not self.file_id:
+            self.file_id = self.calculate_file_id()
+        # end if
+        return self.file_id
+    # end def
+
+    def calculate_file_id(self, *, version: Union[int, None] = None, sub_version: Union[int, None] = None) -> str:
+        """
+        Calculates a new file id from our fields.
+
+        :param version: supply a different version
+        :param sub_version: supply a different version
         :return:
         """
         if not version:
@@ -374,10 +399,8 @@ class FileId(object):
         if not sub_version:
             sub_version = self.sub_version
         # end if
+        assert (version, sub_version) in self.SUPPORTED_VERSIONS
 
-        if self.file_id:
-            return self.file_id
-        # end if
         type_id = self.type_id
         if self.file_reference:
             type_id |= self.TYPE_ID_FILE_REFERENCE_FLAG
