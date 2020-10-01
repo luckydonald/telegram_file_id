@@ -586,42 +586,6 @@ class DocumentFileId(FileId):
         return FileId.from_file_id(file_id=file_id, decoded=decoded)
     # end def
 
-    def to_file_id(self, version: Union[int, None] = None, sub_version: Union[int, None] = None) -> str:
-        return super().to_file_id(version=version, sub_version=sub_version)
-        assert self.type_id in DocumentFileId.TYPES
-        if version is None:
-            version = self.version
-            sub_version = self.sub_version
-        # end if
-        if version is None:
-            version, sub_version = self.MAX_VERSION
-        # end if
-        if version == 2:
-            binary = struct.pack(
-                "<iiqqb",
-                # type, dc_id, id,
-                self.type_id, self.dc_id, self.id if self.id else 0,
-                # access_hash
-                self.access_hash if self.access_hash else 0,
-                # version
-                2
-            )
-        elif version == 4 and sub_version == 22:
-            binary = struct.pack(
-                "<iiqqbb",
-                # type, dc_id, id,
-                self.type_id, self.dc_id, self.id if self.id else 0,
-                # access_hash,
-                self.access_hash if self.access_hash else 0,
-                # twentytwo, version
-                22, 4
-            )
-        else:
-            raise ValueError(f'Unknown version flag: ({version},{sub_version})')
-        # end if
-        return base64url_encode(rle_encode(binary))
-    # end def
-
     def __repr__(self) -> str:
         return "DocumentFileId(file_id={file_id!r}, type_id={type_id!r}, type_generic={type_generic!r}, type_detailed={type_detailed!r}, dc_id={dc_id!r}, id={id!r}, access_hash={access_hash!r}, version={version!r}, owner_id={owner_id!r})".format(
             file_id=self.file_id, type_id=self.type_id, type_generic=self.type_generic, type_detailed=self.type_detailed,
@@ -815,45 +779,6 @@ class PhotoFileId(FileId):
     @classmethod
     def from_file_id(cls: Type[CLASS], file_id, decoded: Union[None, bytes] = None) -> Union[FileId, CLASS]:
         return FileId.from_file_id(file_id=file_id, decoded=decoded)
-    # end def
-
-    def to_file_id(self, version=None, sub_version=None):
-        return super().to_file_id(version=version, sub_version=sub_version)
-        assert self.type_id in PhotoFileId.TYPES
-        if version == 2:
-            binary = struct.pack(
-                '<iiqqqqib',
-                # type, dc_id, id,
-                self.type_id, self.dc_id, self.id if self.id else 0,
-                # access_hash,
-                self.access_hash if self.access_hash else 0,
-                # location_volume_id, location_secret,
-                self.location.volume_id, self.location.secret,
-                # location_local_id,
-                self.location.local_id,
-                # version
-                2
-            )
-        elif version == 4:
-            binary = struct.pack(
-                '<iiqqqqiibb',
-                # type, dc_id, id,
-                self.type_id, self.dc_id, self.id if self.id else 0,
-                # access_hash,
-                self.access_hash if self.access_hash else 0,
-                # location_volume_id, location_secret,
-                self.location.volume_id, self.location.secret,
-                # something,
-                self.something,
-                #  location_local_id,
-                self.location.local_id,
-                # twentytwo, version
-                22, 4
-            )
-        else:
-            raise ValueError(f'Unknown version to use: {version}')
-        # end if
-        return base64url_encode(rle_encode(binary))
     # end def
 
     def __repr__(self) -> str:
