@@ -182,7 +182,7 @@ class FileId(object):
 
     def __init__(
         self,
-        file_id: str,
+        file_id: Union[str, None],
         type_id: int,
         has_reference: bool, file_reference: bytearray,
         has_web_location: bool,
@@ -192,7 +192,7 @@ class FileId(object):
     ):
         """
         :param file_id: Telegram file_id
-        :type  file_id: str
+        :type  file_id: str | None
 
         :param type_id: Number describing the type. See `type_detailed` for a human readable string
         :type  type_id: int
@@ -520,7 +520,7 @@ class FileId(object):
 class DocumentFileId(FileId):
     def __init__(
             self,
-            file_id: str,
+            file_id: Union[str, None],
             type_id: int,
             has_reference: bool, file_reference: bytearray,
             has_web_location: bool,
@@ -530,7 +530,7 @@ class DocumentFileId(FileId):
     ):
         """
         :param file_id: Telegram file_id
-        :type  file_id: str
+        :type  file_id: str | None
 
         :param type_id: Number describing the type. See `type_detailed` for a human readable string
         :type  type_id: int
@@ -744,10 +744,24 @@ class PhotoFileId(FileId):
 
     # end class PhotosizeSourceStickersetThumbnail
 
-    def __init__(self, file_id, type_id, has_reference, has_web_location, type_detailed, file_reference: bytearray, dc_id, id, access_hash, photosize: PhotosizeSource, version=2, sub_version=0):
+    def __init__(
+        self,
+        file_id: Union[str, None],
+        type_id: int,
+        has_reference: bool,
+        has_web_location: bool,
+        type_detailed: str,
+        file_reference: bytearray,
+        dc_id: int,
+        id: int,
+        access_hash: int,
+        photosize: PhotosizeSource,
+        version: int = 2,
+        sub_version: int = 0
+    ):
         """
         :param file_id: Telegram file_id
-        :type  file_id: str
+        :type  file_id: str | None
 
         :param type_id: Number describing the type. See `type_detailed` for a human readable string
         :type  type_id: int
