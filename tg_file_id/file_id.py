@@ -429,6 +429,7 @@ class FileId(object):
             file_id += chr(sub_version).encode()
         # end if
         file_id += chr(version).encode()
+        return base64url_encode(rle_encode(file_id))
     # end def
 
     def __repr__(self) -> str:
