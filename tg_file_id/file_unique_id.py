@@ -67,30 +67,25 @@ class FileUniqueId(object):
         # end if
         logger.debug(f'parsing unique_id {unique_id!r}')
 
-        buffer = BytesIO(decoded)
-        type_id = struct.unpack('<i', buffer.read(4))[0]
+        type_id = struct.unpack('<i', decoded[:4])[0]
         if type_id not in cls.TYPES:
             raise ValueError(f"Type is invalid: {type_id}")
         # end if
         if type_id == cls.TYPE_WEB:
+            buffer = BytesIO(decoded[:4])
             url = unpack_tl_string(buffer)
             file_id_obj = FileUniqueId(type_id=type_id, url=url, _unique_id=unique_id)
-        elif len(decoded) - 4 == 12:
-            volume_id = struct.unpack('<q', buffer.read(8))[0]
-            local_id = struct.unpack('<l', buffer.read(4))[0]
+        elif len(decoded) == 16:  # 16 = 4 + 8 + 4 = file_id + volume_id + local_id
+            volume_id = struct.unpack('<q', decoded[4:12])[0]  # read(8)
+            local_id = struct.unpack('<l', decoded[12:16])[0]  # read(4)
             file_id_obj = FileUniqueId(type_id=type_id, volume_id=volume_id, local_id=local_id, _unique_id=unique_id)
         else:
-            media_id = struct.unpack('<q', buffer.read(8))[0]
+            media_id = struct.unpack('<q', decoded[4:12])[0]  # read(8)
             file_id_obj = FileUniqueId(type_id=type_id, id=media_id, _unique_id=unique_id)
+            if len(decoded) != 12:  # 12 = 4 + 8 = file_id + media_id
+                logger.warning(f'Found {len(decoded) - 12!r} leftover data.')
+            # end if
         # end if
-
-        end_position = buffer.tell()
-        buffer.seek(0, SEEK_END)
-        stuff_left = buffer.tell() - end_position
-        if stuff_left > 0:
-            logger.warning(f'Found {stuff_left} leftover data.')
-        # end if
-
         return file_id_obj
     # end def
 
