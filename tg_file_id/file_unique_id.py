@@ -54,11 +54,14 @@ class FileUniqueId(object):
     # end def
 
     @classmethod
-    def from_unique_id(cls, unique_id, decoded=None):
+    def from_unique_id(cls, unique_id, *, decoded=None, version_002_fix=False):
         """
 
         :param unique_id:
         :param decoded: if the file_id binary data is already decoded (rle + base64url).
+        :param version_002_fix: tg_file_id v0.0.2 and below had a bug in `rle_encode`, where the last \0s would not be encoded.
+                                We try to fix that here, by appending \0s until it has the correct length.
+                                Only done for media_id ones, not possible for volume_id + local_id.
         :except ValueError: Unknown type id.
         :return:
         """
@@ -82,6 +85,12 @@ class FileUniqueId(object):
         else:
             decoded_len = len(decoded)  # should be 12 = 4 + 8 = file_id + media_id
             bin_media_id = decoded[4:12]  # read(8)
+            if version_002_fix:
+                for i in range(len(bin_media_id), 8):
+                    # fill until we have 8 chars, add `\0`s as the broken rle_encode algorithm didn't store the last occurrence of `\0`s.
+                    bin_media_id += b'\0'
+                # end for
+            # end if
             media_id = struct.unpack('<q', bin_media_id)[0]  # read(8)
             file_id_obj = FileUniqueId(type_id=type_id, id=media_id, _unique_id=unique_id)
             if decoded_len > 12:
