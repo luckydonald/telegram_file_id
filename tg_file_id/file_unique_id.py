@@ -80,10 +80,12 @@ class FileUniqueId(object):
             local_id = struct.unpack('<l', decoded[12:16])[0]  # read(4)
             file_id_obj = FileUniqueId(type_id=type_id, volume_id=volume_id, local_id=local_id, _unique_id=unique_id)
         else:
-            media_id = struct.unpack('<q', decoded[4:12])[0]  # read(8)
+            decoded_len = len(decoded)  # should be 12 = 4 + 8 = file_id + media_id
+            bin_media_id = decoded[4:12]  # read(8)
+            media_id = struct.unpack('<q', bin_media_id)[0]  # read(8)
             file_id_obj = FileUniqueId(type_id=type_id, id=media_id, _unique_id=unique_id)
-            if len(decoded) != 12:  # 12 = 4 + 8 = file_id + media_id
-                logger.warning(f'Found {len(decoded) - 12!r} leftover data.')
+            if decoded_len > 12:
+                logger.warning(f'Found {decoded_len - 12!r} leftover data.')
             # end if
         # end if
         return file_id_obj
