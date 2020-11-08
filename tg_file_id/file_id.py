@@ -700,7 +700,7 @@ class PhotoFileId(FileId):
             return (
                 f"{self.__class__.__name__}("
                 f"type_id={self.type_id!r}, volume_id={self.volume_id!r}, location_local_id={self.location_local_id!r}, "
-                f"file_type={self.file_type}, thumbnail_type={self.thumbnail_type}, photosize={self.photosize}"
+                f"file_type={self.file_type}, thumbnail_type={self.thumbnail_type}"
                 f")"
             )
         # end def __repr__
