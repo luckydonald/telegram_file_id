@@ -403,7 +403,10 @@ class FileId(object):
         if not sub_version:
             sub_version = self.sub_version
         # end if
-        assert (version, sub_version) in self.SUPPORTED_VERSIONS
+        if (version, sub_version) not in FileId.SUPPORTED_VERSIONS:
+            from warnings import warn
+            warn(f'Potentially unsupported file_id (sub_)version: {version, sub_version}')
+        # end if
 
         type_id = self.type_id
         if self.file_reference:
@@ -515,7 +518,8 @@ class FileId(object):
         # end if
 
         if (version, sub_version) not in FileId.SUPPORTED_VERSIONS:
-            raise ValueError(f'Unsupported file_id (sub_)version: {version, sub_version}')
+            from warnings import warn
+            warn(f'Potentially unsupported file_id (sub_)version: {version, sub_version}')
         # end if
         return data, version, sub_version
     # end def
