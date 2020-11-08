@@ -141,13 +141,17 @@ def unpack_tl_string(buffer: BytesIO, as_string: bool = False) -> Union[str, byt
 # end def
 
 
-def unpack_null_terminated_string(buffer: BytesIO, as_string: bool = False) -> Union[str, bytes]:
+def unpack_null_terminated_string(buffer: Union[BytesIO, bytes, bytearray], as_string: bool = False) -> Union[str, bytes]:
     """
     Unpack a null terminated (\0) string.
     :param buffer: Input buffer. Needs support for `.read(1)`.
     :param as_string: if we should return it as utf-8 decoded `str` instead of `bytes`.
     :return: The unpacked string.
     """
+    if isinstance(buffer, (bytes, bytearray)):
+        buffer = BytesIO(buffer)
+    # end if
+
     char = buffer.read(1)
     new_buff = b''
     while char != b'\00':
@@ -306,7 +310,7 @@ class FileId(object):
                 photosize = PhotoFileId.PhotosizeSourceLegacy(volume_id=volume_id, secret=secret, location_local_id=location_local_id)
             elif photosize_source == PhotoFileId.PHOTOSIZE_SOURCE_THUMBNAIL:
                 file_type = struct.unpack('<L', buffer.read(4))[0]
-                thumbnail_type = unpack_null_terminated_string(buffer)
+                thumbnail_type = unpack_null_terminated_string(buffer.read(4))  # force to process two extra bytes (after the b'x' or b's').
                 location_local_id = struct.unpack('<l', buffer.read(4))[0]
                 photosize = PhotoFileId.PhotosizeSourceThumbnail(volume_id=volume_id, file_type=file_type, thumbnail_type=thumbnail_type, location_local_id=location_local_id)
             elif photosize_source in (PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL, PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_BIG):
