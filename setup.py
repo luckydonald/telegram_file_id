@@ -52,6 +52,7 @@ setup(
     keywords='telegram bot api file_id file id unpack pack',
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
+    # packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     packages=['tg_file_id'],
     # packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     # List run-time dependencies here. These will be installed by pip when your
