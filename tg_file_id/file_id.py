@@ -543,7 +543,7 @@ class PhotoFileId(FileId):
     class PhotosizeSourceDialogPhoto(PhotosizeSource):
         def __init__(self, type_id: int, volume_id: int, location_local_id: int, dialog_id, dialog_access_hash):
             self.dialog_id = dialog_id
-            self.dialog_access_hash = dialog_access_hash
+            self.dialog_access_hash = dialog_access_hash  # stays 0 for non-super group chats
             super().__init__(type_id, volume_id=volume_id, location_local_id=location_local_id)
         # end def __init__
 
