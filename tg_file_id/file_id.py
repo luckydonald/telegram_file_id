@@ -492,8 +492,9 @@ class FileId(object):
         (2, 0),
         (4, 22),
         (4, 27),
+        (4, 30),
     )
-    MAX_VERSION = (4, 27)
+    MAX_VERSION = SUPPORTED_VERSIONS[-1]
 
     @classmethod
     def _normalize_type_id(cls, type_id: int) -> Tuple[int, bool, bool]:
