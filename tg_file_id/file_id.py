@@ -333,7 +333,7 @@ class FileId(object):
                 file_id=file_id, type_id=type_id, has_reference=has_reference, has_web_location=has_web_location,
                 type_detailed=PhotoFileId.TYPES[type_id],
                 file_reference=file_reference,
-                dc_id=volume_id, id=media_id, access_hash=access_hash,
+                dc_id=dc_id, id=media_id, access_hash=access_hash,
                 photosize=photosize,
                 version=version, sub_version=sub_version,
             )
