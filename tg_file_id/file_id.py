@@ -148,7 +148,7 @@ class FileId(object):
                 photosize = PhotoFileId.PhotosizeSourceThumbnail(volume_id=volume_id, file_type=file_type, thumbnail_type=thumbnail_type, location_local_id=location_local_id)
             elif photosize_source in (PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL, PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_BIG):
                 dialog_id = struct.unpack('<q', buffer.read(8))[0]
-                dialog_access_hash = struct.unpack('<q', buffer.read(8))[1]
+                dialog_access_hash = struct.unpack('<q', buffer.read(8))[0]
                 location_local_id = struct.unpack('<l', buffer.read(4))[0]
                 if photosize_source == PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_SMALL:
                     photosize = PhotoFileId.PhotosizeSourceDialogPhotoSmall(volume_id=volume_id, dialog_id=dialog_id, dialog_access_hash=dialog_access_hash, location_local_id=location_local_id)
