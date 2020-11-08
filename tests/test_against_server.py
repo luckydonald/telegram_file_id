@@ -47,14 +47,14 @@ class MyTestCase(unittest.TestCase):
         try:
             from pytgbot import Bot
         except ImportError:
-            return self.skipTest('pytgbot dependency missing')
+            return self.fail('pytgbot dependency missing')
         # end try
 
         if not API_KEY:
-            return self.skipTest('API_KEY not set')
+            return self.fail('API_KEY not set')
         # end if
         if not CHAT_ID:
-            return self.skipTest('CHAT_ID not set')
+            return self.fail('CHAT_ID not set')
         # end if
 
         bot = Bot(API_KEY)
