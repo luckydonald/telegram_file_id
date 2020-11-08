@@ -34,7 +34,7 @@ class TestPhotoFileId(TestCase):
         self.assertEqual(None, file_id.something, "PhotoFileId file_id.something field matches")  # diff
     # end def
 
-    def test_from_file_id_new(self):
+    def test_from_file_id_4_22_photo(self):
         file_id_str = 'AgADAgADRaoxG64rCUlfm3fj3nihW3PHUQ8ABAEAAwIAA3gAA2uwAQABFgQ'
         file_id = PhotoFileId.from_file_id(file_id_str)
         print(file_id)
@@ -44,11 +44,10 @@ class TestPhotoFileId(TestCase):
         self.assertEqual(2, file_id.dc_id, "PhotoFileId file_id.dc_id field matches")
         self.assertEqual(PhotoFileId.TYPE_PHOTO, file_id.type_id, "PhotoFileId file_id.type_id field matches")
         self.assertEqual(2, file_id.type_id, "PhotoFileId file_id.type_id field matches")
-        self.assertEqual('photo', file_id.type_str, "PhotoFileId file_id.type_str field matches")
+        self.assertEqual('photo', file_id.type_generic, "PhotoFileId file_id.type_str field matches")
         self.assertEqual('photo', file_id.type_detailed, "PhotoFileId file_id.type_detailed field matches")
         self.assertEqual(6602691427396197215, file_id.access_hash, "PhotoFileId file_id.access_hash field matches")
-        self.assertEqual(257017715, file_id.location.volume_id, "PhotoFileId file_id.location.volume_id field matches")
-        self.assertEqual(8589934593, file_id.location.secret, "PhotoFileId file_id.location.secret field matches")  # changes
-        self.assertEqual(110699, file_id.location.local_id, "PhotoFileId file_id.location.local_id field matches")  # changes
-        self.assertEqual(120, file_id.something, "PhotoFileId file_id.something field matches")  # diff
+        self.assertEqual(257017715, file_id.photosize.volume_id, "PhotoFileId file_id.location.volume_id field matches")
+        self.assertEqual(110699, file_id.photosize.location_local_id, "PhotoFileId file_id.location.local_id field matches")  # changes
+        # self.assertEqual(120, file_id.something, "PhotoFileId file_id.something field matches")  # diff
     # end def
