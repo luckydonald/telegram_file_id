@@ -593,7 +593,7 @@ class DocumentFileId(FileId):
         :return: new file id
         :rtype: str
         """
-
+        assert self.type_id in (FileId.TYPE_DOCUMENT, FileId.TYPE_DOCUMENT)
         self.change_type(FileId.TYPE_STICKER if self.type_id == FileId.TYPE_DOCUMENT else FileId.TYPE_DOCUMENT)
         return self.recalculate()
     # end def
@@ -605,8 +605,8 @@ class DocumentFileId(FileId):
         :param type_id:
         :return:
         """
-        self.type_detailed = DocumentFileId.TYPES[self.type_id]  # this raises KeyError if it isn't a valid type.
         self.type_id = type_id
+        self.type_detailed = DocumentFileId.TYPES[self.type_id]  # this raises KeyError if it isn't a valid type.
         return self.recalculate()
     # end def
 
