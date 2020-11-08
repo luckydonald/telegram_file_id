@@ -97,4 +97,76 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(b'm', thumb_file.photosize.thumbnail_type)
         self.assertEqual(FileId.TYPE_THUMBNAIL, thumb_file.photosize.file_type)
     # end if
+
+    def test_get_chat_picture(self):
+        try:
+            from pytgbot import Bot
+        except ImportError:
+            return self.fail('pytgbot dependency missing')
+        # end try
+
+        if not API_KEY:
+            return self.fail('API_KEY not set')
+        # end if
+        if not CHAT_ID:
+            return self.fail('CHAT_ID not set')
+        # end if
+
+        bot = Bot(API_KEY)
+
+        chat = bot.get_chat(chat_id=CHAT_ID)
+        if not chat.photo:
+            return self.skipTest('Test chat has no picture')
+        # end if
+
+        # big picture
+
+        big_file = FileId.from_file_id(chat.photo.big_file_id)  # 'AQADAgATSd1hmi4AAwMAAyXKZ-7_____AAgligACHgQ'
+        big_file_unique_id = FileUniqueId.from_file_id(chat.photo.big_file_id).to_unique_id()
+        self.assertEqual(chat.photo.big_file_unique_id, big_file_unique_id)
+
+        self.assertEqual(FileId.TYPE_PROFILE_PHOTO, big_file.type_id)
+        self.assertEqual('profile picture', big_file.type_detailed)
+        self.assertEqual('photo', big_file.type_generic)
+        self.assertEqual(big_file.version, FileId.MAX_VERSION[0], 'sticker should be supported max (sub_)version')
+        self.assertEqual(big_file.sub_version, FileId.MAX_VERSION[1], 'sticker should be supported max (sub_)version')
+        self.assertEqual(0, big_file.id)
+        self.assertEqual(0, big_file.access_hash)
+        self.assertEqual(False, big_file.has_reference)
+        self.assertEqual(False, big_file.has_web_location)
+
+        self.assertIsInstance(big_file.photosize, PhotoFileId.PhotosizeSource)
+        self.assertEqual(200158600521, big_file.photosize.volume_id)
+        self.assertEqual(35365, big_file.photosize.location_local_id)
+
+        self.assertEqual(PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_BIG, big_file.photosize.type_id)
+        self.assertIsInstance(big_file.photosize, PhotoFileId.PhotosizeSourceDialogPhotoBig)
+        self.assertEqual(CHAT_ID, big_file.photosize.dialog_id)
+        self.assertEqual(0, big_file.photosize.dialog_access_hash)
+
+        # small picture
+
+        small_file = FileId.from_file_id(chat.photo.small_file_id)  # 'AQADAgATSd1hmi4AAwIAAyXKZ-7_____AAgjigACHgQ'
+        small_file_unique_id = FileUniqueId.from_file_id(chat.photo.small_file_id).to_unique_id()
+        self.assertEqual(chat.photo.small_file_unique_id, small_file_unique_id)
+
+        self.assertEqual(FileId.TYPE_PROFILE_PHOTO, small_file.type_id)
+        self.assertEqual(big_file.type_detailed, small_file.type_detailed)
+        self.assertEqual(big_file.type_generic, small_file.type_generic)
+        self.assertEqual(big_file.version, small_file.version)
+        self.assertEqual(big_file.sub_version, small_file.sub_version)
+        self.assertEqual(big_file.id, small_file.id)
+        self.assertEqual(big_file.access_hash, small_file.access_hash)
+        self.assertEqual(big_file.has_reference, small_file.has_reference)
+        self.assertEqual(big_file.has_web_location, small_file.has_web_location)
+
+        self.assertIsInstance(small_file.photosize, PhotoFileId.PhotosizeSource)
+        self.assertEqual(big_file.photosize.volume_id, small_file.photosize.volume_id)
+        self.assertEqual(big_file.photosize.location_local_id, small_file.photosize.location_local_id)
+
+        self.assertEqual(PhotoFileId.PHOTOSIZE_SOURCE_DIALOGPHOTO_BIG, small_file.photosize.type_id)
+        self.assertIsInstance(small_file.photosize, PhotoFileId.PhotosizeSourceDialogPhotoBig)
+        self.assertEqual(CHAT_ID, small_file.photosize.dialog_id)
+        self.assertEqual(big_file.photosize.dialog_access_hash, small_file.photosize.dialog_access_hash)
+    # end if
 # end class
