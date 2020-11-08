@@ -188,7 +188,7 @@ class FileId(object):
         self,
         file_id: Union[str, None],
         type_id: int,
-        has_reference: bool, file_reference: bytearray,
+        has_reference: bool, file_reference: bytes,
         has_web_location: bool,
         type_generic: str, type_detailed: str,
         dc_id: int, id: int, access_hash: int,
@@ -526,12 +526,13 @@ class FileId(object):
 # end class FileId
 
 
+# noinspection PyShadowingBuiltins
 class DocumentFileId(FileId):
     def __init__(
             self,
             file_id: Union[str, None],
             type_id: int,
-            has_reference: bool, file_reference: bytearray,
+            has_reference: bool, file_reference: bytes,
             has_web_location: bool,
             type_detailed: str,
             dc_id: int, id: int, access_hash: int,
@@ -760,7 +761,7 @@ class PhotoFileId(FileId):
         has_reference: bool,
         has_web_location: bool,
         type_detailed: str,
-        file_reference: bytearray,
+        file_reference: bytes,
         dc_id: int,
         id: int,
         access_hash: int,
