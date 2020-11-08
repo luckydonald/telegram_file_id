@@ -25,7 +25,7 @@ class TestDocumentFileId(TestCase):
         self.assertEqual(4, file_id.dc_id, "PhotoFileId file_id.dc_id field matches")
         self.assertEqual(DocumentFileId.TYPE_STICKER, file_id.type_id, "PhotoFileId file_id.type_id field matches")
         self.assertEqual(8, file_id.type_id, "PhotoFileId file_id.type_id field matches")
-        self.assertEqual('document', file_id.type_str, "PhotoFileId file_id.type_str field matches")
+        self.assertEqual('document', file_id.type_generic, "PhotoFileId file_id.type_generic field matches")
         self.assertEqual('sticker', file_id.type_detailed, "PhotoFileId file_id.type_detailed field matches")
         self.assertEqual(-8653026958495010306, file_id.access_hash, "PhotoFileId file_id.access_hash field matches")
     # end def
@@ -40,7 +40,7 @@ class TestDocumentFileId(TestCase):
         self.assertEqual(4, file_id.dc_id, "PhotoFileId file_id.dc_id field matches")
         self.assertEqual(DocumentFileId.TYPE_STICKER, file_id.type_id, "PhotoFileId file_id.type_id field matches")
         self.assertEqual(8, file_id.type_id, "PhotoFileId file_id.type_id field matches")
-        self.assertEqual('document', file_id.type_str, "PhotoFileId file_id.type_str field matches")
+        self.assertEqual('document', file_id.type_generic, "PhotoFileId file_id.type_generic field matches")
         self.assertEqual('sticker', file_id.type_detailed, "PhotoFileId file_id.type_detailed field matches")
         self.assertEqual(-8653026958495010306, file_id.access_hash, "PhotoFileId file_id.access_hash field matches")
     # end def
@@ -89,12 +89,12 @@ class TestDocumentFileId(TestCase):
         file_id_str_old = 'CAADBAADwwADmFmqDf6xBrPTReqHAg'
         file_id = DocumentFileId.from_file_id(file_id_str_old)
         self.assertEqual(DocumentFileId.TYPE_STICKER, file_id.type_id, "PhotoFileId file_id.type_id field matches")
-        self.assertEqual('document', file_id.type_str, "PhotoFileId file_id.type_str field matches")
+        self.assertEqual('document', file_id.type_generic, "PhotoFileId file_id.type_generic field matches")
         self.assertEqual('sticker', file_id.type_detailed, "PhotoFileId file_id.type_detailed field matches")
         print(file_id)
         file_id.swap_type_sticker()
         self.assertEqual(DocumentFileId.TYPE_DOCUMENT, file_id.type_id, "PhotoFileId file_id.type_id field matches")
-        self.assertEqual('document', file_id.type_str, "PhotoFileId file_id.type_str field matches")
+        self.assertEqual('document', file_id.type_generic, "PhotoFileId file_id.type_generic field matches")
         self.assertEqual('document', file_id.type_detailed, "PhotoFileId file_id.type_detailed field matches")
     # end def
 
@@ -102,11 +102,11 @@ class TestDocumentFileId(TestCase):
         file_id_str_old = 'CAADBAADwwADmFmqDf6xBrPTReqHAg'
         file_id = DocumentFileId.from_file_id(file_id_str_old)
         self.assertEqual(DocumentFileId.TYPE_STICKER, file_id.type_id, "PhotoFileId file_id.type_id field matches")
-        self.assertEqual('document', file_id.type_str, "PhotoFileId file_id.type_str field matches")
+        self.assertEqual('document', file_id.type_generic, "PhotoFileId file_id.type_generic field matches")
         self.assertEqual('sticker', file_id.type_detailed, "PhotoFileId file_id.type_detailed field matches")
         file_id.change_type(DocumentFileId.TYPE_DOCUMENT)
         self.assertEqual(DocumentFileId.TYPE_DOCUMENT, file_id.type_id, "PhotoFileId file_id.type_id field matches")
-        self.assertEqual('document', file_id.type_str, "PhotoFileId file_id.type_str field matches")
+        self.assertEqual('document', file_id.type_generic, "PhotoFileId file_id.type_generic field matches")
         self.assertEqual('document', file_id.type_detailed, "PhotoFileId file_id.type_detailed field matches")
     # end def
 
