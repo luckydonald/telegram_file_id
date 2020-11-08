@@ -1,7 +1,7 @@
 from .file_id import (
-    FileId, base64url_decode, base64url_encode, rle_decode, rle_encode, pack_tl_string,
-    unpack_tl_string, WebLocationFileId, PhotoFileId,
+    FileId, WebLocationFileId, PhotoFileId,
 )
+from .utils import base64url_decode, base64url_encode, rle_decode, rle_encode, pack_tl_string, unpack_tl_string
 
 import struct
 import logging

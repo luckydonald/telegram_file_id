@@ -5,9 +5,9 @@ from codecs import decode, encode
 from luckydonaldUtils.encoding import to_binary
 
 from tg_file_id.file_id import (
-    FileId, rle_decode, base64url_decode, DocumentFileId, PhotoFileId, base64url_encode,
-    rle_encode,
+    FileId, DocumentFileId, PhotoFileId,
 )
+from tg_file_id.utils import base64url_decode, base64url_encode, rle_decode, rle_encode
 from tg_file_id.file_unique_id import FileUniqueId
 
 
