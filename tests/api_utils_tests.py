@@ -132,19 +132,45 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(file_id_4_22.id, file_id_4_27.id, msg='4.22->4.27: id')
         self.assertEqual(file_id_4_22.access_hash, file_id_4_27.access_hash, msg='4.22->4.27: access_hash')
         self.assertEqual(file_id_4_22.owner_id, file_id_4_27.owner_id, msg='4.22->4.27: owner_id')
+
+        file_id_4_30 = FileId.from_file_id('CAACAgQAAxkBAAIE4V-nVmlwWzNxKeRGZYjG0m7UWm0IAALDAAOYWaoN_rEGs9NF6oceBA')  # (4,30)
+        self.assertEqual(file_id_4_30.type_id, FileId.TYPE_STICKER, 'type is sticker')
+        self.assertEqual(4, file_id_4_30.version)
+        self.assertEqual(30, file_id_4_30.sub_version)
+        self.assertIsInstance(file_id_4_30, DocumentFileId)
+        self.assertEqual(media_id, file_id_4_30.id)
+
+        self.assertEqual(file_id_4_22.type_id, file_id_4_30.type_id, msg='4.22->4.30: type_id')
+        self.assertEqual(file_id_4_22.type_generic, file_id_4_30.type_generic, msg='4.22->4.30: type_generic')
+        self.assertEqual(file_id_4_22.type_detailed, file_id_4_30.type_detailed, msg='4.22->4.30: type_detailed')
+        self.assertEqual(file_id_4_22.dc_id, file_id_4_30.dc_id, msg='4.22->4.30: dc_id')
+        self.assertEqual(file_id_4_22.id, file_id_4_30.id, msg='4.22->4.30: id')
+        self.assertEqual(file_id_4_22.access_hash, file_id_4_30.access_hash, msg='4.22->4.30: access_hash')
+        self.assertEqual(file_id_4_22.owner_id, file_id_4_30.owner_id, msg='4.22->4.30: owner_id')
     # end def
 
-    def test_sticker_2019_july(self):
+    def test_sticker_2020_11_08(self):
         # HotCherry, the waving one.
         file_id_4_22 = FileId.from_file_id('CAADAgADBQADwDZPE_lqX5qCa011FgQ')
         self.assertEqual(file_id_4_22.type_id, file_id_4_22.TYPE_STICKER, 'type is sticker')
         self.assertEqual(4, file_id_4_22.version)
         self.assertEqual(22, file_id_4_22.sub_version)
+        self.assertEqual(1391391008142393349, file_id_4_22.id)
+        self.assertEqual(8452530284324154105, file_id_4_22.access_hash)
 
         file_id_4_27 = FileId.from_file_id('CAACAgIAAxkBAAIC1F9CrovDlZGS5umOiP0HdbMIxVhsAAIFAAPANk8T-WpfmoJrTXUbBA')  # (4,27)
         self.assertEqual(file_id_4_27.type_id, file_id_4_27.TYPE_STICKER, 'type is sticker')
         self.assertEqual(4, file_id_4_27.version)
         self.assertEqual(27, file_id_4_27.sub_version)
+        self.assertEqual(1391391008142393349, file_id_4_27.id)
+        self.assertEqual(8452530284324154105, file_id_4_27.access_hash)
+
+        file_id_4_30 = FileId.from_file_id('CAACAgIAAxkBAAIE31-nVcM1Bkj0e5shlg_MIYsrRdDFAAIFAAPANk8T-WpfmoJrTXUeBA')  # (4,30)
+        self.assertEqual(file_id_4_30.type_id, file_id_4_30.TYPE_STICKER, 'type is sticker')
+        self.assertEqual(4, file_id_4_30.version)
+        self.assertEqual(30, file_id_4_30.sub_version)
+        self.assertEqual(1391391008142393349, file_id_4_30.id)
+        self.assertEqual(8452530284324154105, file_id_4_30.access_hash)
     # end def
 
     def test_xxx(self):
@@ -198,6 +224,15 @@ class MyTestCase(unittest.TestCase):
         self.assertIsInstance(file_id, PhotoFileId)
         self.assertEqual(4, file_id.version)
         self.assertEqual(27, file_id.sub_version)
+    # end def
+
+    def test_photo_a_v4_30(self):
+        # same as AgADAgADRaoxG64rCUlfm3fj3nihW3PHUQ8ABLefjdP8kuxqa7ABAAEC
+        file_id = FileId.from_file_id('AgACAgIAAxkBAAIE3V-nVPRnkcGnCW8Vd53VQgouUt60AAJFqjEbrisJSV-bd-PeeKFbc8dRDwAEAQADAgADeAADa7ABAAEeBA')
+        self.assertEqual(FileId.TYPE_PHOTO, file_id.type_id)
+        self.assertIsInstance(file_id, PhotoFileId)
+        self.assertEqual(4, file_id.version)
+        self.assertEqual(30, file_id.sub_version)
     # end def
 
     def test_other_impl(self):
@@ -292,9 +327,18 @@ class MyTestCase(unittest.TestCase):
         users = {}
         fails = 0
         successes = 0
+        FILE = '/Users/luckydonald/Downloads/Telegram/tblsticker.csv.txt'
+        import os
+        if not os.path.exists(FILE):
+            self.skipTest('There\'s no file with stickers to test with.')
+        # end if
         with open('/Users/luckydonald/Downloads/Telegram/tblsticker.csv.txt') as f:
             for line in f:
                 file_id, _ = line.split(',', 1)
+                if file_id == 'id':
+                    # header line
+                    continue
+                # end if
                 try:
                     obj = FileId.from_file_id(file_id)
                     successes += 1
@@ -318,6 +362,7 @@ class MyTestCase(unittest.TestCase):
         print(fails)
     # end def
 # END CLASS
+
 
 if __name__ == '__main__':
     unittest.main()
