@@ -60,6 +60,7 @@ def rle_decode(binary: bytes) -> bytearray:
 
 
 def rle_encode(binary: bytes) -> bytearray:
+    # https://github.com/LonamiWebs/Telethon/blob/c4cbead25b01663e73cc0cdcb35c26f1f053ae2d/telethon/utils.py#L1052-L1064
     # https://github.com/danog/MadelineProto/blob/1485d3879296a997d47f54469b0dd518b9230b06/src/danog/MadelineProto/TL/Files.php#L85
     new = bytearray()
     count = 0
