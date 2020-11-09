@@ -3,6 +3,8 @@
 Parse and construct Telegram `file_id`s and `unique_file_id`s.
 Even generate a `unique_file_id` from a `file_id`.
 
+Based on the great [danog/tg-file-decoder](https://github.com/danog/tg-file-decoder/tree/2fc11198ddbc4cc384fe32e576bc16e79dae9f35) and works of [LonamiWebs/telethon](https://github.com/LonamiWebs/Telethon/blob/c4cbead25b01663e73cc0cdcb35c26f1f053ae2d/telethon/utils.py)
+
 ### Examples below
 - [Install](#install)
 - [Parse `file_id`s](#parse-file-id-s)
