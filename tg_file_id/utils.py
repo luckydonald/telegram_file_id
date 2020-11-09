@@ -34,6 +34,7 @@ def rle_decode(binary: bytes) -> bytearray:
     :return: The array of ints.
     :rtype: bytearray
     """
+    # https://github.com/LonamiWebs/Telethon/blob/c4cbead25b01663e73cc0cdcb35c26f1f053ae2d/telethon/utils.py#L1032-L1049
     # https://github.com/danog/MadelineProto/blob/38d6ee07b3a7785bcc77ed4ba3ef9ddd8e915975/pwrtelegram_debug_bot.php#L28-L42
     # https://github.com/danog/MadelineProto/blob/1485d3879296a997d47f54469b0dd518b9230b06/src/danog/MadelineProto/TL/Files.php#L66
     base256 = bytearray()
